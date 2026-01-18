@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.VaritaActivity">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.3"
+        android:scaleType="fitXY"
+        android:src="@drawable/fondo1" />
+
+    <ImageView
+        android:id="@+id/cabecera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/cabecera" />
+
+    <TextView
+        android:id="@+id/tituloPantalla"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Gestor de Varitas"
+        style="@style/TitulosPantallas"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <ImageButton
+        android:id="@+id/flechaAtras"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        style="@style/BotonAtras"
+        android:onClick="onClickAtras"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="@id/tituloPantalla"
+        app:srcCompat="@drawable/flecha" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Madera"
+        style="@style/TitulosCreacionVarita"
+        android:layout_marginTop="35dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cabecera" />
+
+    <EditText
+        android:id="@+id/edtxtMadera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/EntrysVarita"
+        android:hint="Madera"
+        android:inputType="text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Núcleo"
+        style="@style/TitulosCreacionVarita"
+        android:layout_marginTop="35dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edtxtMadera"/>
+
+    <EditText
+        android:id="@+id/edtxtNucleo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/EntrysVarita"
+        android:inputType="text"
+        android:hint=" Núcleo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Longitud"
+        style="@style/TitulosCreacionVarita"
+        android:layout_marginTop="35dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edtxtNucleo"/>
+
+    <EditText
+        android:id="@+id/edtxtLongitud"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/EntrysVarita"
+        android:hint="Longitud"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView4"/>
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Personaje"
+        style="@style/TitulosCreacionVarita"
+        android:layout_marginTop="35dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edtxtLongitud" />
+
+    <EditText
+        android:id="@+id/edtxtPersonaje"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/EntrysVarita"
+        android:inputType="text"
+        android:hint="Personaje"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView5"/>
+
+    <CheckBox
+        android:id="@+id/chkRota"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="¿Está Rota?"
+        style="@style/CheckBox"
+        android:layout_marginTop="35dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edtxtPersonaje" />
+
+    <Button
+        android:id="@+id/BotonCreacion"
+        style="@style/BotonesPortada"
+        android:layout_marginTop="50dp"
+        android:text="Crear Varita"
+        android:onClick="onClickCreacion"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chkRota" />
+
+    <Button
+        android:id="@+id/BotonRomper"
+        android:text="Romper Varita"
+        android:layout_marginTop="50dp"
+        style="@style/BotonesPortada"
+        android:onClick="onClickRomper"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chkRota" />
+
+    <ImageView
+        android:id="@+id/gifFondo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.5"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,95 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.HarryPotter" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="Theme.HarryPotter" parent="Base.Theme.HarryPotter" />
+
+    <!-- TITULO -->
+    <style name="Titulo">
+        <item name="android:fontFamily">@font/tpytitulo</item>
+        <item name="android:textSize">100sp</item>
+        <item name="android:textColor">@color/grisecito</item>
+    </style>
+
+    <!-- Texto Bienvenida -->
+    <style name="TextoBienvenida">
+        <item name="android:fontFamily">@font/tpyletra1negrito</item>
+        <item name="android:textSize">25sp</item>
+        <item name="android:textColor">@color/azulito</item>
+    </style>
+
+    <!-- BOTONES PORTADA -->
+    <style name="BotonesPortada">
+        <item name="backgroundTint">@color/grisecito</item>
+        <item name="android:layout_height">65dp</item>
+        <item name="android:layout_width">220dp</item>
+        <item name="android:textSize">19sp</item>
+        <item name="cornerRadius">20dp</item>
+        <item name="strokeColor">@color/azulito</item>
+        <item name="strokeWidth">3dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:fontFamily">@font/tpyletra1negrito</item>
+    </style>
+
+    <!-- Titulos Pantallas -->
+    <style name="TitulosPantallas">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">30sp</item>
+        <item name="fontFamily">@font/tpytitulo</item>
+        <item name="android:gravity">start</item>
+        <item name="android:layout_marginTop">35dp</item>
+        <item name="android:layout_marginStart">25dp</item>
+    </style>
+
+    <!-- Botón Atrás -->
+    <style name="BotonAtras">
+        <item name="android:layout_marginTop">35dp</item>
+        <item name="android:layout_marginStart">300dp</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <!-- Titulos ListView -->
+    <style name="TitulosListView">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/grisecito</item>
+        <item name="fontFamily">@font/tpyletra1negrito</item>
+    </style>
+
+    <!-- Valores ListView -->
+    <style name="ValoresListView">
+        <item name="android:textSize">19sp</item>
+        <item name="android:textColor">@color/grisecito</item>
+        <item name="fontFamily">@font/typletra1</item>
+        <item name="android:layout_marginStart">4dp</item>
+    </style>
+
+    <!-- Titulos Creación Varita -->
+    <style name="TitulosCreacionVarita">
+        <item name="android:textSize">30sp</item>
+        <item name="android:textColor">@color/azulito</item>
+        <item name="fontFamily">@font/tpyletra1negrito</item>
+    </style>
+
+    <!-- Entrys Varita -->
+    <style name="EntrysVarita">
+        <item name="android:ems">10</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:layout_marginTop">30dp</item>
+        <item name="android:fontFamily">@font/typletra1</item>
+        <item name="android:textColor">@color/grisecito</item>
+        <item name="android:textSize">23sp</item>
+    </style>
+
+    <!-- CheckBox -->
+    <style name="CheckBox">
+        <item name="android:buttonTint">@color/checkbox_colors</item>
+        <item name="android:fontFamily">@font/tpyletra1negrito</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textColor">@color/grisecito</item>
+        <item name="android:paddingStart">6sp</item>
+    </style>
+</resources>
