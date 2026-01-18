@@ -11,7 +11,9 @@ import com.example.harrypotter.R
 import com.example.harrypotter.data.CrearVaritaDto
 import com.example.harrypotter.data.Varita
 import com.example.harrypotter.databinding.ActivityVaritaBinding
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 
 class VaritaActivity : AppCompatActivity() {
@@ -46,40 +48,77 @@ class VaritaActivity : AppCompatActivity() {
     }
 
     // crear varita comprobando si están los campos con datos
-    fun crearVarita(): Varita? {
-        // coger los datos de los edit text
+    fun crearVaritaDto(): CrearVaritaDto? {
         val madera = binding.edtxtMadera.text.toString()
         val nucleo = binding.edtxtNucleo.text.toString()
         val longitudTexto = binding.edtxtLongitud.text.toString()
-        val personaje = binding.edtxtPersonaje.text.toString().ifEmpty { "Sin asignar" }
-        val rota = binding.chkRota.isChecked
 
-        // comprobar que los campos obligatorios no están vacios
         if (madera.isBlank() || nucleo.isBlank() || longitudTexto.isBlank()) {
             return null
         }
 
-        // longitud a bigdecimal
         val longitud = longitudTexto.toBigDecimalOrNull() ?: return null
 
-        // crear la varita con los datos de los entrys
-        return Varita(
+        return CrearVaritaDto(
             madera = madera,
             nucleo = nucleo,
-            longitud = longitud,
-            personaje = personaje,
-            rota = rota
+            longitud = longitud
         )
     }
 
-    fun onClickCreacion(view : View) {
-        val varita = crearVarita()
-        if(varita == null){
-            dialogoError()
-        } else {
-            //val listaVaritas = servicio.crearVarita(varita)
+
+    fun onClickCreacion(view: View) {
+        val dto = crearVaritaDto() ?: return dialogoError()
+
+        val nombrePersonaje = binding.edtxtPersonaje.text.toString().trim()
+        val estaRota = binding.chkRota.isChecked
+
+        lifecycleScope.launch {
+            try {
+                // PASO 1: Crear la varita
+                val varitaApi = servicio.crearVarita(dto)
+                val idV = varitaApi.id
+
+                var mensajeFinal = "¡Varita creada con éxito!"
+
+                // PASO 2: Si hay nombre de personaje, buscar su ID
+                if (nombrePersonaje.isNotEmpty() && nombrePersonaje != "Sin asignar") {
+                    val listaPersonajes = servicio.buscarPersonajePorNombre(nombrePersonaje)
+
+                    if (listaPersonajes.isNotEmpty()) {
+                        // Si existe, asignamos
+                        val idP = listaPersonajes[0].id
+                        servicio.asignarVarita(idP!!, idV)
+                        mensajeFinal = "¡Varita creada y asignada a ${listaPersonajes[0].nombre}!"
+                    } else {
+                        // SI NO EXISTE: Avisamos al usuario
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                this@VaritaActivity,
+                                "El personaje '$nombrePersonaje' no existe. Se pondrá como 'Sin asignar'.",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+                }
+
+                // PASO 3: Si estaba el checkbox marcado, la rompemos
+                if (estaRota) {
+                    servicio.romperVarita(idV)
+                }
+
+                // Mostramos el éxito final y cerramos
+                Toast.makeText(this@VaritaActivity, mensajeFinal, Toast.LENGTH_SHORT).show()
+
+                // Esperamos un poquito para que el usuario pueda leer el mensaje de "no existe" si salió
+                finish()
+
+            } catch (e: Exception) {
+                Toast.makeText(this@VaritaActivity, "Error en la creación: ${e.message}", Toast.LENGTH_LONG).show()
+            }
         }
     }
+
 
     // poner la varita como rota
     fun onClickRomper(view: View) {
@@ -148,14 +187,15 @@ class VaritaActivity : AppCompatActivity() {
         val pantalla = intent.getStringExtra("pantalla")
 
         if(pantalla == "main") {
+            // Ver botón crear
+            binding.BotonRomper.visibility = View.GONE
+            binding.BotonCreacion.visibility = View.VISIBLE
+        } else if (pantalla == "lista") {
             // Ver datos varita y ver botón romper
             binding.BotonCreacion.visibility = View.GONE
             binding.BotonRomper.visibility = View.VISIBLE
             ponerDatosEnEntrys()
-        } else {
-            // Ver botón crear
-            binding.BotonRomper.visibility = View.GONE
-            binding.BotonCreacion.visibility = View.VISIBLE
+            binding.chkRota.isEnabled = false
         }
     }
     fun gifFondo() {

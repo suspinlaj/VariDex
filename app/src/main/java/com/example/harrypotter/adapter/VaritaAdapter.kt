@@ -84,7 +84,7 @@ class VaritaAdapter(
             intent.putExtra("personaje", varita.personaje)
             intent.putExtra("rota", varita.rota == "Sí") // convertir String "Sí"/"No" a Boolean
             intent.putExtra("longitud", varita.longitud.toString())
-            intent.putExtra("pantalla", "main") //
+            intent.putExtra("pantalla", "lista") //
             context.startActivity(intent)
         }
 

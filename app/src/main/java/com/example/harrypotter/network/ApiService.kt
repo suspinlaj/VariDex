@@ -1,6 +1,7 @@
 package com.example.harrypotter.network
 
 import com.example.harrypotter.data.CrearVaritaDto
+import com.example.harrypotter.data.PersonajeDto
 import com.example.harrypotter.data.VaritaDto
 import com.example.harrypotter.data.VaritaResumenDto
 import retrofit2.http.Body
@@ -22,5 +23,15 @@ interface ApiService {
         @Body crearVaritaDto: CrearVaritaDto
     ): VaritaResumenDto
 
+    // Buscar personaje por nombre (devuelve una lista)
+    @GET("nombre/{palabra}")
+    suspend fun buscarPersonajePorNombre(@Path("palabra") nombre: String): List<PersonajeDto>
+
+    // Asignar la varita al personaje
+    @PUT("{idPersonaje}/varita/{idVarita}")
+    suspend fun asignarVarita(
+        @Path("idPersonaje") idPersonaje: Int,
+        @Path("idVarita") idVarita: Int
+    ): VaritaDto
 
 }
