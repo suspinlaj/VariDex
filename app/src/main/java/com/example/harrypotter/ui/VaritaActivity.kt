@@ -19,7 +19,7 @@ import retrofit2.HttpException
 class VaritaActivity : AppCompatActivity() {
     private lateinit var binding: ActivityVaritaBinding
     private var servicio = RetrofitClient.apiService
-    private lateinit var listaCampos: List<Any>
+    private var listaCamposIncorrectos: MutableList<String> = mutableListOf()
 
     private var idVarita: Int = 0
     private var madera: String? = null
@@ -49,15 +49,33 @@ class VaritaActivity : AppCompatActivity() {
 
     // crear varita comprobando si están los campos con datos
     fun crearVaritaDto(): CrearVaritaDto? {
+
+        listaCamposIncorrectos = mutableListOf()
+
         val madera = binding.edtxtMadera.text.toString()
         val nucleo = binding.edtxtNucleo.text.toString()
         val longitudTexto = binding.edtxtLongitud.text.toString()
 
-        if (madera.isBlank() || nucleo.isBlank() || longitudTexto.isBlank()) {
+
+        //añadir elementos obligatorios a la lista de error si están vacios
+        if (madera.isBlank()){
+            listaCamposIncorrectos.add("Madera")
+        }
+        if (nucleo.isBlank()){
+            listaCamposIncorrectos.add("Núcleo")
+        }
+        if (longitudTexto.isBlank()){
+            listaCamposIncorrectos.add("Longitud")
+        }
+
+        if (listaCamposIncorrectos.isNotEmpty()) {
             return null
         }
 
-        val longitud = longitudTexto.toBigDecimalOrNull() ?: return null
+        val longitud = longitudTexto.toBigDecimalOrNull() ?: run {
+            listaCamposIncorrectos.add("Longitud (valor inválido)")
+            return null
+        }
 
         return CrearVaritaDto(
             madera = madera,
@@ -66,56 +84,55 @@ class VaritaActivity : AppCompatActivity() {
         )
     }
 
-
     fun onClickCreacion(view: View) {
-        val dto = crearVaritaDto() ?: return dialogoError()
+        val dto = crearVaritaDto() ?: return dialogoError(
+            "Campos incompletos",
+            listaCamposIncorrectos.joinToString("\n")
+        )
 
         val nombrePersonaje = binding.edtxtPersonaje.text.toString().trim()
         val estaRota = binding.chkRota.isChecked
 
         lifecycleScope.launch {
             try {
-                // PASO 1: Crear la varita
+                // Crear la varita
                 val varitaApi = servicio.crearVarita(dto)
-                val idV = varitaApi.id
+                val idVarita = varitaApi.id
 
-                var mensajeFinal = "¡Varita creada con éxito!"
-
-                // PASO 2: Si hay nombre de personaje, buscar su ID
+                // buscar ID si hay nombre de personaje
                 if (nombrePersonaje.isNotEmpty() && nombrePersonaje != "Sin asignar") {
                     val listaPersonajes = servicio.buscarPersonajePorNombre(nombrePersonaje)
 
                     if (listaPersonajes.isNotEmpty()) {
-                        // Si existe, asignamos
-                        val idP = listaPersonajes[0].id
-                        servicio.asignarVarita(idP!!, idV)
-                        mensajeFinal = "¡Varita creada y asignada a ${listaPersonajes[0].nombre}!"
-                    } else {
-                        // SI NO EXISTE: Avisamos al usuario
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(
-                                this@VaritaActivity,
-                                "El personaje '$nombrePersonaje' no existe. Se pondrá como 'Sin asignar'.",
-                                Toast.LENGTH_LONG
-                            ).show()
+
+                        val idPersonaje = listaPersonajes[0].id
+
+                        if (idPersonaje != null) {
+                            servicio.asignarVarita(idPersonaje, idVarita)
+                            dialogoError("Éxito", "Varita creada correctamente")
                         }
+                    } else {
+                        // si no existe el personaje
+                        dialogoError(
+                            "Error Personaje",
+                            "El personaje '$nombrePersonaje' no existe. Se pondrá como 'Sin asignar'."
+                        )
                     }
                 }
-
-                // PASO 3: Si estaba el checkbox marcado, la rompemos
                 if (estaRota) {
-                    servicio.romperVarita(idV)
+                    servicio.romperVarita(idVarita)
                 }
-
-                // Mostramos el éxito final y cerramos
-                Toast.makeText(this@VaritaActivity, mensajeFinal, Toast.LENGTH_SHORT).show()
-
-                // Esperamos un poquito para que el usuario pueda leer el mensaje de "no existe" si salió
-                finish()
-
-            } catch (e: Exception) {
-                Toast.makeText(this@VaritaActivity, "Error en la creación: ${e.message}", Toast.LENGTH_LONG).show()
             }
+
+            catch (e: HttpException) {
+                val code = e.code()
+                val errorBody = e.response()?.errorBody()?.string() // JSON como String
+
+                // Mostrar mensaje raw
+                dialogoError("Error", errorBody ?: "Error desconocido")
+            }
+
+
         }
     }
 
@@ -129,40 +146,26 @@ class VaritaActivity : AppCompatActivity() {
                 val resumen = servicio.romperVarita(idVarita)
 
                 binding.chkRota.isChecked = true
-                rota = true // Actualizar variable local
-                Toast.makeText(this@VaritaActivity, "Varita rota: ${resumen.materiales}", Toast.LENGTH_SHORT).show()
-
-            } catch (e: HttpException) {
-                // SI HAY ERROR DE LA API (Código 400, 404, etc.)
-                val codigo = e.code()
-                // Intentamos extraer el mensaje de error del body ("La varita ya se encuentra rota")
-                val mensajeError = e.response()?.errorBody()?.string() ?: "Error desconocido"
-
-                if (codigo == 400) {
-                    Toast.makeText(this@VaritaActivity, mensajeError, Toast.LENGTH_LONG).show()
-                } else {
-                    Toast.makeText(this@VaritaActivity, "Error del servidor: $codigo", Toast.LENGTH_SHORT).show()
-                }
+                rota = true // Actualizar rota
+                dialogoError("Éxito", "La varita se rompió correctamente")
             } catch (e: Exception) {
-                // ERRORES DE CONEXIÓN (Sin internet, timeout)
-                Toast.makeText(this@VaritaActivity, "Error de red: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
+                dialogoError("Error", "La varita ya se encuentra rota")            }
+
         }
     }
 
-    fun dialogoError() {
-        // Crear diálogo
+    fun dialogoError(titulo: String, mensaje: String) {
         val dialogo = DialogoError()
 
-        // Mensaje que sale
-        val args = Bundle()
-        args.putString("TITULO", "Error")
-        args.putString("MENSAJE", "Campos incorrectos")
-        dialogo.arguments = args
+        val args = Bundle().apply {
+            putString("TITULO", titulo)
+            putString("MENSAJE", mensaje)
+        }
 
-        // Mostrar diálogo
-        dialogo.show(supportFragmentManager, null)
+        dialogo.arguments = args
+        dialogo.show(supportFragmentManager, "DialogoError")
     }
+
 
     // poner los datos de la varita seleccionada en la listview en los edit text
     fun ponerDatosEnEntrys() {
@@ -182,6 +185,14 @@ class VaritaActivity : AppCompatActivity() {
         binding.chkRota.isChecked = rota
     }
 
+    fun desactivarEdicion() {
+        binding.chkRota.isEnabled = false
+        binding.edtxtMadera.isEnabled = false
+        binding.edtxtNucleo.isEnabled = false
+        binding.edtxtLongitud.isEnabled = false
+        binding.edtxtPersonaje.isEnabled = false
+    }
+
     fun funcionPantalla() {
         // de la pantalla que vengo
         val pantalla = intent.getStringExtra("pantalla")
@@ -191,13 +202,14 @@ class VaritaActivity : AppCompatActivity() {
             binding.BotonRomper.visibility = View.GONE
             binding.BotonCreacion.visibility = View.VISIBLE
         } else if (pantalla == "lista") {
-            // Ver datos varita y ver botón romper
+            // Ver datos varita y botón romper
             binding.BotonCreacion.visibility = View.GONE
             binding.BotonRomper.visibility = View.VISIBLE
             ponerDatosEnEntrys()
-            binding.chkRota.isEnabled = false
+            desactivarEdicion()
         }
     }
+
     fun gifFondo() {
         val gifImagenView = findViewById<ImageView>(R.id.gifFondo)
 
